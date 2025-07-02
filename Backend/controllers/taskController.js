@@ -22,39 +22,50 @@ export const createTask = async (req, res) => {
 };
 
 // Update a task (status, content, etc.)
+// PATCH /tasks/:id   (partial update)
 export const updateTask = async (req, res) => {
   try {
-    const { userId } = req.user;
+    const userId = req.user.userId;
+
+    // 1️⃣ Fetch task to check ownership/assignment
     const task = await Task.findById(req.params.id);
     if (!task) return res.status(404).json({ message: "Task not found" });
 
-    // If user is the creator: allow updating any main fields
+    /* 2️⃣ Determine which fields this user may change */
+    let allowed = [];
     if (task.createdBy.toString() === userId) {
-      const allowedFields = ["title", "description", "dueDate", "priority", "assignedTo", "status"];
-      allowedFields.forEach(field => {
-        if (req.body[field] !== undefined) {
-          task[field] = req.body[field];
-        }
-      });
-    }
-    // Else if user is the assignee: only allow status update
-    else if (task.assignedTo.toString() === userId) {
-      if (req.body.status) {
-        task.status = req.body.status;
-      } else {
-        return res.status(403).json({ message: "Not authorized to update this field" });
-      }
-    } 
-    else {
+      // Creator → can change most fields
+      allowed = ["title", "description", "dueDate", "priority", "assignedTo", "status"];
+    } else if (task.assignedTo.toString() === userId) {
+      // Assignee → can ONLY change status
+      allowed = ["status"];
+    } else {
       return res.status(403).json({ message: "Not authorized to update this task" });
     }
 
-    await task.save();
-    res.status(200).json({ message: "Task updated", task });
+    /* 3️⃣ Build the $set payload only with allowed + provided keys */
+    const update = {};
+    allowed.forEach((key) => {
+      if (req.body[key] !== undefined) update[key] = req.body[key];
+    });
+
+    if (Object.keys(update).length === 0) {
+      return res.status(400).json({ message: "Nothing to update or fields not allowed" });
+    }
+
+    /* 4️⃣ Run update */
+    const updatedTask = await Task.findByIdAndUpdate(
+      req.params.id,
+      { $set: update },
+      { new: true, runValidators: true, timestamps: true }   // timestamps → bumps updatedAt
+    );
+
+    res.status(200).json({ message: "Task updated", task: updatedTask });
   } catch (err) {
     res.status(500).json({ message: "Task update failed", error: err.message });
   }
 };
+
 
 // Get tasks assigned to or created by the user
 export const getUserTasks = async (req, res) => {
@@ -70,5 +81,16 @@ export const getUserTasks = async (req, res) => {
     res.status(200).json(tasks);
   } catch (err) {
     res.status(500).json({ message: "Error fetching tasks", error: err.message });
+  }
+};
+
+// Delete a task
+export const deleteTask = async (req, res) => {
+  try {
+    const removed = await Task.findByIdAndDelete(req.params.id);
+    if (!removed) return res.status(404).json({ message: "Task not found" });
+    res.status(200).json({ message: "Task deleted", id: req.params.id });
+  } catch (err) {
+    res.status(500).json({ message: "Error deleting task", error: err.message });
   }
 };
