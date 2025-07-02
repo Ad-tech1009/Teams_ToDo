@@ -14,7 +14,27 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
-    }
+    },
+    role: {
+        type: String,
+        default: "member",
+    },
+    teams: {
+        type: [String],
+        default: ["default"],
+    },
+    skills: {
+        type: [String],
+        default: ["general"],
+    },
+    phone: {
+        type: String,
+        default: "-",
+    },
+    profilePicture: {
+        type: String,
+        default: "https://cdn-icons-png.flaticon.com/512/10337/10337609.png",
+    },
 }, {timestamps: true});
 
 userSchema.pre("save", async function(next) {

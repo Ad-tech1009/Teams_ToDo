@@ -76,7 +76,7 @@ export const login = async (req, res) => {
   }
 };
 
-// route: POST /auth/refresh
+// route: GET /auth/refresh
 export const refreshAccessToken = async (req, res) => {
   const refreshToken = req.cookies.refreshToken;
   if (!refreshToken) return res.status(401).json({ message: "Refresh token missing" });

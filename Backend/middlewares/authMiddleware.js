@@ -1,11 +1,16 @@
 import jwt from "jsonwebtoken";
+import { refreshAccessToken } from "../controllers/authController.js";
 
 export const requireAuth = (req, res, next) => {
   const token = req.cookies.accessToken;
-  if (!token) return res.status(401).json({ message: "Access token missing" });
+  // console.log("Access token:", token);
+  if (!token) {
+    // If no access token, try to refresh it
+    return refreshAccessToken(req, res);
+  }
 
   try {
-    const decoded = jwt.verify(token, process.env.ACCESS_SECRET || "accesskey");
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || "accesskey");
     req.user = decoded;
     next();
   } catch (err) {
