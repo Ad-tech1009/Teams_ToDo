@@ -13,31 +13,27 @@ import { useNavigate } from "react-router";
 
 const Dashboard = () => {
   const dispatch = useAppDispatch();
-  const url = import.meta.env.VITE_API_URI
-  const isDarkMode = useAppSelector((s) => s.theme.mode === "dark"); // true | false
+  const url = import.meta.env.VITE_API_URI;
+  const isDarkMode = useAppSelector((s) => s.theme.mode === "dark");
   const user = useAppSelector((s) => s.auth.user);
   const navigate = useNavigate();
 
-  /* ─────────────  TASK STATE  ───────────── */
-  const [tasks, setTasks] = useState([]); // all tasks from backend
-
-  /* ─────────────  MODAL / UI TOGGLES  ───────────── */
+  const [tasks, setTasks] = useState([]);
   const [showUserDashboard, setShowUserDashboard] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [view, setView] = useState("Dashboard"); // "Kanban Board" | "Dashboard"
+  const [view, setView] = useState("Dashboard");
 
-  /* ─────────────  INITIAL FETCH  ───────────── */
   useEffect(() => {
     if (!user) {
       navigate("/", { replace: true });
       return;
     }
-  });
+  }, [user, navigate]);
 
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const { data } = await axios.get(`${url}/task`); // returns tasks assigned to or by user
+        const { data } = await axios.get(`${url}/task`);
         setTasks(data);
       } catch (err) {
         console.error(err.response?.data?.message || "Failed to load tasks");
@@ -46,9 +42,8 @@ const Dashboard = () => {
     fetchTasks();
   }, [url]);
 
-  /* ---------- BAR: tasks created per day (Mon‑Sat) ---------- */
   useEffect(() => {
-    if (!tasks.length) return; // nothing yet
+    if (!tasks.length) return;
     const chartDom = document.getElementById("taskBarChart");
     if (!chartDom) return;
 
@@ -96,7 +91,6 @@ const Dashboard = () => {
     };
   }, [tasks, isDarkMode]);
 
-  /* ---------- GAUGE: % tasks completed ---------- */
   useEffect(() => {
     if (!tasks.length) return;
     const dom = document.getElementById("circularProgressChart");
@@ -160,10 +154,8 @@ const Dashboard = () => {
         isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"
       }`}
     >
-      <div className="flex">
-        {/* Sidebar */}
-        <div className="fixed h-screen w-16 bg-black rounded-r-3xl flex flex-col items-center py-4 space-y-6">
-          {/* Avatar */}
+      <div className="flex flex-col md:flex-row">
+        <div className="hidden md:flex fixed h-screen w-16 bg-black rounded-r-3xl flex-col items-center py-4 space-y-6 z-20">
           <img
             src={
               user?.profilePicture ||
@@ -174,37 +166,23 @@ const Dashboard = () => {
             className="w-10 h-10 rounded-full object-cover cursor-pointer border-2 border-orange-600 hover:border-orange-700 transition-colors"
           />
 
-          {/* Icon Button */}
-          {[
-            {
-              icon: "fa-plus",
-              onClick: () => setShowAddModal(true),
-              label: "Add Task",
-            },
-            {
-              icon: "fa-columns",
-              onClick: () => setView("Kanban Board"),
-              label: "Kanban Board",
-              active: view === "Kanban Board",
-            },
-            {
-              icon: "fa-th-large",
-              onClick: () => setView("Dashboard"),
-              label: "Dashboard",
-              active: view === "Dashboard",
-            },
-          ].map((item, index) => (
+          {["fa-plus", "fa-columns", "fa-th-large"].map((icon, index) => (
             <button
               key={index}
-              onClick={item.onClick}
-              className={`group relative w-10 h-10 flex items-center justify-center rounded-full cursor-pointer transition-all duration-200 text-white hover:bg-orange-600 ${
-                item.active ? "text-orange-500" : ""
-              }`}
+              onClick={() => {
+                if (icon === "fa-plus") setShowAddModal(true);
+                else if (icon === "fa-columns") setView("Kanban Board");
+                else if (icon === "fa-th-large") setView("Dashboard");
+              }}
+              className={`group relative w-10 h-10 flex items-center justify-center rounded-full cursor-pointer transition-all duration-200 text-white hover:bg-orange-600 hover:text-orange-400 focus:bg-orange-600 focus:text-orange-400`}
             >
-              <i className={`fas ${item.icon}`}></i>
-              {/* Tooltip */}
+              <i className={`fas ${icon}`}></i>
               <span className="absolute left-14 whitespace-nowrap bg-black text-white text-sm cursor-pointer px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10">
-                {item.label}
+                {icon === "fa-plus"
+                  ? "Add Task"
+                  : icon === "fa-columns"
+                  ? "Kanban Board"
+                  : "Dashboard"}
               </span>
             </button>
           ))}
@@ -212,46 +190,70 @@ const Dashboard = () => {
           <LogoutButton />
         </div>
 
-        {/* Main Content */}
-        <div className="ml-16 w-[calc(100%-4rem)] p-4">
-          {/* Header */}
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold">{view}</h1>
-            <div className="flex items-center space-x-4">
-              <button
-                className="cursor-pointer !rounded-button whitespace-nowrap"
-                onClick={() => dispatch(toggleTheme())}
-              >
-                <i
-                  className={`fas ${
-                    isDarkMode
-                      ? "fa-sun text-yellow-400"
-                      : "fa-moon text-gray-600"
-                  }`}
-                ></i>
-              </button>
-            </div>
-          </div>
-
-          {/* KanBan Board */}
-          {view == "Kanban Board" && (
-            <KanbanBoard tasks={tasks} setTasks={setTasks} />
-          )}
-          {/* Dashboard Grid */}
-          {view == "Dashboard" && <DashGrid />}
+        <div className="md:hidden fixed bottom-0 left-0 right-0 bg-black py-2 flex justify-around items-center z-20 rounded-t-3xl">
+          {["fa-plus", "fa-columns", "fa-th-large", "fa-user"].map((icon, index) => (
+            <button
+              key={index}
+              className="text-white text-xl flex flex-col items-center hover:text-orange-400"
+              onClick={() => {
+                if (icon === "fa-plus") setShowAddModal(true);
+                else if (icon === "fa-columns") setView("Kanban Board");
+                else if (icon === "fa-th-large") setView("Dashboard");
+                else if (icon === "fa-user") setShowUserDashboard(!showUserDashboard);
+              }}
+            >
+              <i className={`fas ${icon}`}></i>
+              <span className="text-xs mt-1">
+                {icon === "fa-plus"
+                  ? "Add"
+                  : icon === "fa-columns"
+                  ? "Board"
+                  : icon === "fa-th-large"
+                  ? "Dash"
+                  : "Profile"}
+              </span>
+            </button>
+          ))}
         </div>
 
-        {/* User Dashboard Modal */}
-        {showUserDashboard && (
-          <UserProfile open onClose={() => setShowUserDashboard(false)} />
-        )}
+        <div className="pt-4 pb-20 md:pb-4 md:pt-0 md:ml-16 w-full md:w-[calc(100%-4rem)] p-4">
+          <div className="flex justify-between items-center mb-6 flex-wrap gap-2">
+            <h1 className="text-2xl font-bold">{view}</h1>
+            <button
+              className="cursor-pointer rounded-full p-2 hover:bg-orange-600/20"
+              onClick={() => dispatch(toggleTheme())}
+            >
+              <i
+                className={`fas ${
+                  isDarkMode ? "fa-sun text-yellow-400" : "fa-moon text-gray-600"
+                }`}
+              ></i>
+            </button>
+          </div>
 
-        {/* Add Task Modal */}
-        <AddTaskModal
-          open={showAddModal}
-          onClose={() => setShowAddModal(false)}
-          onTaskAdded={(task) => setTasks((prev) => [...prev, task])}
-        />
+          {view === "Kanban Board" && (
+            <KanbanBoard tasks={tasks} setTasks={setTasks} />
+          )}
+
+          {view === "Dashboard" && <DashGrid />}
+        </div>
+
+        {(showUserDashboard || showAddModal) && (
+          <div className="fixed inset-0 flex justify-center items-center p-4 z-30 overflow-auto bg-black/50">
+            <div className="bg-white dark:bg-gray-800 rounded-xl w-full max-w-md mx-auto p-4 shadow-xl overflow-y-auto max-h-[90vh]">
+              {showUserDashboard && (
+                <UserProfile open onClose={() => setShowUserDashboard(false)} />
+              )}
+              {showAddModal && (
+                <AddTaskModal
+                  open
+                  onClose={() => setShowAddModal(false)}
+                  onTaskAdded={(task) => setTasks((prev) => [...prev, task])}
+                />
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

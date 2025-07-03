@@ -256,7 +256,7 @@ const Home = () => {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
             <div>
-              <div className="text-2xl font-bold mb-6">doist.</div>
+              <div className="text-2xl font-bold mb-6">todo.</div>
               <p className="text-gray-400 mb-6">Organize your work and life, finally.</p>
               <div className="flex space-x-4">
                 <a href="#" className="text-gray-400 hover:text-white transition-colors cursor-pointer">
@@ -309,7 +309,7 @@ const Home = () => {
           </div>
 
           <div className="mt-12 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-500 mb-4 md:mb-0">© 2025 Doist Inc. All rights reserved.</p>
+            <p className="text-gray-500 mb-4 md:mb-0">© 2025 todo. Inc. All rights reserved.</p>
             <div className="flex items-center space-x-4">
               <div className="flex items-center text-gray-400">
                 <i className="fab fa-cc-visa text-2xl mr-2"></i>
