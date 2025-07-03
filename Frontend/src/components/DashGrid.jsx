@@ -449,12 +449,6 @@ const DashGrid = () => {
           </div>
         </div>
 
-        <div className="flex items-end mb-4">
-          <span className="text-4xl font-bold">15</span>
-          <span className="ml-2 text-gray-500">/ 12%</span>
-          <span className="ml-1 text-gray-500">Of all tasks</span>
-        </div>
-
         <div className="flex space-x-1">
           {Array(4)
             .fill(0)

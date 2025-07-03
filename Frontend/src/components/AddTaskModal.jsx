@@ -5,7 +5,7 @@ import { useAppSelector } from "../app/hooks";
 export default function AddTaskModal({ open, onClose, onTaskAdded }) {
   /* ─────────── Redux state ─────────── */
   const dark        = useAppSelector((s) => s.theme.mode) === "dark";
-//   const currentUser = useAppSelector((s) => s.auth.user);      // { id, … }
+  // const currentUser = useAppSelector((s) => s.auth.user);      // { id, … }
 
   /* ─────────── Form state ─────────── */
   const [title, setTitle]             = useState("");
@@ -80,7 +80,7 @@ export default function AddTaskModal({ open, onClose, onTaskAdded }) {
           <h2 className="text-xl font-bold">Create Task</h2>
           <button
             onClick={() => { onClose(); resetForm(); }}
-            className="text-gray-400 hover:text-gray-600"
+            className="text-gray-400 hover:text-gray-600 cursor-pointer"
           >
             <i className="fas fa-times" />
           </button>
@@ -150,14 +150,14 @@ export default function AddTaskModal({ open, onClose, onTaskAdded }) {
         <div className="flex justify-end gap-2 mt-5">
           <button
             onClick={() => { onClose(); resetForm(); }}
-            className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
+            className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500 cursor-pointer"
           >
             Cancel
           </button>
           <button
             disabled={saving}
             onClick={submit}
-            className="px-5 py-2 bg-orange-600 text-white rounded hover:bg-orange-700 disabled:opacity-50"
+            className="px-5 py-2 bg-orange-600 text-white rounded hover:bg-orange-700 cursor-pointer disabled:opacity-50"
           >
             {saving ? "Creating…" : "Create"}
           </button>

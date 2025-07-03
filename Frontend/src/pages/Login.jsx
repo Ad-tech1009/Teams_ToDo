@@ -27,7 +27,7 @@ const Login = () => {
     try {
       const res = await axios.post("/api/auth/login", formData);
       dispatch(loginSuccess(res.data.user)); // save user in Redux
-      navigate("/", { replace: true }); // go to dashboard
+      navigate("/dash"); // go to dashboard
     } catch (err) {
       const msg = err.response?.data?.message || "Invalid email or password";
       setError(msg);
@@ -41,17 +41,22 @@ const Login = () => {
         darkMode ? "bg-[#0D1117] text-white" : "bg-[#F5F5F5] text-gray-800"
       }`}
     >
-      {/* Theme toggle */}
-      <button
-        onClick={() => dispatch(toggleTheme())}
-        className="absolute top-6 right-6 p-2 cursor-pointer rounded-full hover:bg-white/10"
-      >
-        <i
-          className={`fas ${
-            darkMode ? "fa-sun text-yellow-400" : "fa-moon text-gray-600"
-          } text-xl`}
-        />
-      </button>
+      {/* Header */}
+      <div className="fixed top-0 left-0 w-full z-50">
+        <div className="flex justify-between items-center px-4 py-3">
+          <div className="text-xl font-bold cursor-pointer" onClick={()=>{navigate("/")}}>todo.</div>
+          <button
+            onClick={() => dispatch(toggleTheme())}
+            className="cursor-pointer !rounded-button whitespace-nowrap"
+          >
+            <i
+              className={`fas ${
+                darkMode ? "fa-sun text-yellow-400" : "fa-moon text-gray-600"
+              }`}
+            />
+          </button>
+        </div>
+      </div>
 
       <div className="w-full max-w-6xl px-4 py-8 flex flex-col lg:flex-row gap-8 items-center">
         {/* Login form */}
@@ -128,7 +133,7 @@ const Login = () => {
             {/* Submit */}
             <button
               type="submit"
-              className="w-full px-8 py-3 bg-[#FF4500] text-white font-semibold rounded-lg hover:bg-[#ff5e21] transition-colors"
+              className="w-full px-8 py-3 bg-[#FF4500] text-white font-semibold rounded-lg hover:bg-[#ff5e21] transition-colors cursor-pointer"
             >
               Log In
             </button>

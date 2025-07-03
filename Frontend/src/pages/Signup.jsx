@@ -53,12 +53,8 @@ const Signup = () => {
         },
         { withCredentials: true }
       );
-
-      // Dispatch to Redux → user is now logged in
       dispatch(loginSuccess(res.data.user));
-
-      // Redirect to dashboard / home
-      navigate("/");
+      navigate("/dash");
     } catch (err) {
       const msg = err.response?.data?.message || err.message || "Signup failed";
       setError(msg);
@@ -71,18 +67,28 @@ const Signup = () => {
         darkMode ? "bg-[#0D1117] text-white" : "bg-[#F5F5F5] text-gray-800"
       }`}
     >
-      {/* Toggle Theme */}
-      <div className="absolute top-6 right-6 z-10">
-        <button
-          onClick={() => dispatch(toggleTheme())}
-          className="cursor-pointer !rounded-button whitespace-nowrap"
-        >
-          <i
-            className={`fas ${
-              darkMode ? "fa-sun text-yellow-400" : "fa-moon text-gray-600"
-            }`}
-          />
-        </button>
+      {/* Header */}
+      <div className="fixed top-0 left-0 w-full z-50">
+        <div className="flex justify-between items-center px-4 py-3">
+          <div
+            className="text-xl font-bold cursor-pointer"
+            onClick={() => {
+              navigate("/");
+            }}
+          >
+            todo.
+          </div>
+          <button
+            onClick={() => dispatch(toggleTheme())}
+            className="cursor-pointer !rounded-button whitespace-nowrap"
+          >
+            <i
+              className={`fas ${
+                darkMode ? "fa-sun text-yellow-400" : "fa-moon text-gray-600"
+              }`}
+            />
+          </button>
+        </div>
       </div>
 
       <div className="w-full max-w-6xl px-4 py-8 flex flex-col lg:flex-row gap-8 items-center">
@@ -217,7 +223,7 @@ const Signup = () => {
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <button
                 type="submit"
-                className="w-full md:w-auto px-8 py-3 bg-[#FF4500] text-white font-semibold rounded-lg hover:bg-[#ff5e21] transition-all duration-300"
+                className="w-full md:w-auto px-8 py-3 bg-[#FF4500] text-white font-semibold rounded-lg hover:bg-[#ff5e21] transition-all duration-300 cursor-pointer"
               >
                 Sign Up
               </button>

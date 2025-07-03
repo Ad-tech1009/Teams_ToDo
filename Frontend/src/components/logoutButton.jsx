@@ -14,7 +14,7 @@ export default function LogoutButton() {
       console.error("Logout error:", err);
     } finally {
       dispatch(logout());
-      navigate("/login", { replace: true });
+      navigate("/", { replace: true });
     }
   };
 

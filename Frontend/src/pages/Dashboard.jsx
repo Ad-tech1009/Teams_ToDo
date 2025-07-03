@@ -196,13 +196,13 @@ const Dashboard = () => {
             <button
               key={index}
               onClick={item.onClick}
-              className={`group relative w-10 h-10 flex items-center justify-center rounded-full transition-all duration-200 text-white hover:bg-orange-600 ${
+              className={`group relative w-10 h-10 flex items-center justify-center rounded-full cursor-pointer transition-all duration-200 text-white hover:bg-orange-600 ${
                 item.active ? "text-orange-500" : ""
               }`}
             >
               <i className={`fas ${item.icon}`}></i>
               {/* Tooltip */}
-              <span className="absolute left-14 whitespace-nowrap bg-black text-white text-sm px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10">
+              <span className="absolute left-14 whitespace-nowrap bg-black text-white text-sm cursor-pointer px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10">
                 {item.label}
               </span>
             </button>

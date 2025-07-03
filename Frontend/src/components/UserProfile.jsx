@@ -79,7 +79,7 @@ export default function UserProfile({ open, onClose }) {
         {/* Header */}
         <div className="flex justify-between items-start mb-6">
           <h2 className="text-2xl font-bold">User Profile</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 cursor-pointer">
             <i className="fas fa-times text-xl" />
           </button>
         </div>
@@ -180,7 +180,7 @@ export default function UserProfile({ open, onClose }) {
               {!edit ? (
                 <button
                   onClick={() => setEdit(true)}
-                  className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600"
+                  className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 cursor-pointer"
                 >
                   Edit
                 </button>
@@ -188,13 +188,13 @@ export default function UserProfile({ open, onClose }) {
                 <>
                   <button
                     onClick={() => setEdit(false)}
-                    className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
+                    className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500 cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleSave}
-                    className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                    className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 cursor-pointer"
                   >
                     Save
                   </button>
