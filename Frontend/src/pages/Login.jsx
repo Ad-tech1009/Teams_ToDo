@@ -10,6 +10,7 @@ const Login = () => {
   const mode = useAppSelector((state) => state.theme.mode);
   const darkMode = mode === "dark";
   const dispatch = useAppDispatch();
+  const url = import.meta.env.VITE_API_URI
 
   // ─────────────────── Router / state ──────────────
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ const Login = () => {
     e.preventDefault();
     setError("");
     try {
-      const res = await axios.post("/api/auth/login", formData);
+      const res = await axios.post(`${url}/auth/login`, formData);
       dispatch(loginSuccess(res.data.user)); // save user in Redux
       navigate("/dash"); // go to dashboard
     } catch (err) {

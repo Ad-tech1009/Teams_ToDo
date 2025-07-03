@@ -18,19 +18,20 @@ export default function AddTaskModal({ open, onClose, onTaskAdded }) {
   const [teamMembers, setTeamMembers] = useState([]);
   const [saving, setSaving]           = useState(false);
   const [err, setErr]                 = useState("");
+  const url = import.meta.env.VITE_API_URI
 
   /* ─────────── Fetch team members when modal opens ─────────── */
   useEffect(() => {
     if (!open) return;
     (async () => {
       try {
-        const { data } = await axios.get("/api/user/all");
+        const { data } = await axios.get(`${url}/user/all`);
         setTeamMembers(data);
       } catch {
         setTeamMembers([]);
       }
     })();
-  }, [open]);
+  }, [open,url]);
 
   /* ─────────── Helpers ─────────── */
   const resetForm = () => {
@@ -54,7 +55,7 @@ export default function AddTaskModal({ open, onClose, onTaskAdded }) {
         status,
         assignedTo: assignee,
       };
-      const { data } = await axios.post("/api/task/", payload);
+      const { data } = await axios.post(`${url}/task/`, payload);
       onTaskAdded(data.task);         
       onClose();
       resetForm();

@@ -13,6 +13,7 @@ import { useNavigate } from "react-router";
 
 const Dashboard = () => {
   const dispatch = useAppDispatch();
+  const url = import.meta.env.VITE_API_URI
   const isDarkMode = useAppSelector((s) => s.theme.mode === "dark"); // true | false
   const user = useAppSelector((s) => s.auth.user);
   const navigate = useNavigate();
@@ -36,14 +37,14 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const { data } = await axios.get("/api/tasks"); // returns tasks assigned to or by user
+        const { data } = await axios.get(`${url}/task`); // returns tasks assigned to or by user
         setTasks(data);
       } catch (err) {
         console.error(err.response?.data?.message || "Failed to load tasks");
       }
     };
     fetchTasks();
-  }, []);
+  }, [url]);
 
   /* ---------- BAR: tasks created per day (Mon‑Sat) ---------- */
   useEffect(() => {

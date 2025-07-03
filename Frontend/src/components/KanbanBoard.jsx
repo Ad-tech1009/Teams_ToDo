@@ -21,6 +21,7 @@ import axios from "axios";
 export default function KanbanBoard({ tasks, setTasks }) {
   const dark = useAppSelector((s) => s.theme.mode) === "dark";
   const [activeId, setActiveId] = useState(null);
+  const url = import.meta.env.VITE_API_URI
 
   const columns = ["ToDo", "In Progress", "Done"];
   const colLabels = {
@@ -68,7 +69,7 @@ export default function KanbanBoard({ tasks, setTasks }) {
 
     /* 2. Persist backend */
     try {
-      await axios.patch(`/api/tasks/${active.id}`, { status: toStatus });
+      await axios.patch(`${url}/task/${active.id}`, { status: toStatus });
     } catch (e) {
       console.error("Failed to update", e);
     }

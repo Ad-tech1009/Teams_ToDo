@@ -25,6 +25,7 @@ const Signup = () => {
     password: "",
     confirmPassword: "",
   });
+  const url = import.meta.env.VITE_API_URI
 
   // Handlers
   const handleInputChange = (e) => {
@@ -45,7 +46,7 @@ const Signup = () => {
 
     try {
       const res = await axios.post(
-        "/api/auth/signup",
+        `${url}/auth/signup`,
         {
           name: formData.fullName,
           email: formData.email,

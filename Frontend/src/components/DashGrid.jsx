@@ -16,12 +16,13 @@ const DashGrid = () => {
   const [showAverageTasks, setShowAverageTasks] = useState(false);
   const [showUnassignedTasks, setShowUnassignedTasks] = useState(false);
   const [showHighPriorityTasks, setShowHighPriorityTasks] = useState(false);
+  const url = import.meta.env.VITE_API_URI
 
   /* ─────────────  INITIAL FETCH  ───────────── */
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const { data } = await axios.get("/api/tasks"); // returns tasks assigned to or by user
+        const { data } = await axios.get(`${url}/task`); // returns tasks assigned to or by user
         setTasks(data);
       } catch (err) {
         console.error(err.response?.data?.message || "Failed to load tasks");

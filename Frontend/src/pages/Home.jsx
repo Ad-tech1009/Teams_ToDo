@@ -1,4 +1,5 @@
-import React, { useState, useEffect} from 'react';
+/* eslint-disable no-unused-vars */
+import { useState, useEffect} from 'react';
 import Testimonials from '../components/Testimonials';
 import FeatureCards from '../components/FeatureCards';
 import { Link,useNavigate } from 'react-router';

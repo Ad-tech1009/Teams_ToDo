@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";                 // axios instance withCredentials=true
+import axios from "axios";  
 import { useAppSelector } from "../app/hooks";
 
 export default function UserProfile({ open, onClose }) {
@@ -10,6 +10,7 @@ export default function UserProfile({ open, onClose }) {
   const [form, setForm]       = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState("");
+  const url = import.meta.env.VITE_API_URI
 
   // ─────────── Fetch profile ───────────
   useEffect(() => {
@@ -17,7 +18,7 @@ export default function UserProfile({ open, onClose }) {
     const fetchMe = async () => {
       setLoading(true);
       try {
-        const { data } = await axios.get(`/api/user/${userId}`);
+        const { data } = await axios.get(`${url}/user/${userId}`);
         setUser(data);
         setForm({
           name:  data.name,
@@ -50,7 +51,7 @@ export default function UserProfile({ open, onClose }) {
         teams:  form.teams.split(",").map((t) => t.trim()).filter(Boolean),
         skills: form.skills.split(",").map((s) => s.trim()).filter(Boolean),
       };
-      const { data } = await axios.patch(`/api/user/${userId}`, payload);
+      const { data } = await axios.patch(`${url}/user/${userId}`, payload);
       setUser(data.user);
       setEdit(false);
     } catch (err) {

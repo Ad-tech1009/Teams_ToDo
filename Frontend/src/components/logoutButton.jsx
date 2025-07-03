@@ -6,10 +6,11 @@ import axios from "axios";
 export default function LogoutButton() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const url = import.meta.env.VITE_API_URI
 
   const handleLogout = async () => {
     try {
-      await axios.get("/api/auth/logout"); 
+      await axios.get(`${url}/auth/logout`); 
     } catch (err) {
       console.error("Logout error:", err);
     } finally {

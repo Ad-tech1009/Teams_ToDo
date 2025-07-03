@@ -9,15 +9,15 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
-  server: {
-    proxy:
-    {
-      "/api":{
-        target: "http://localhost:5000",
-        changeOrigin: false,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/api/,''),
-      }
-    },
-    },
+  // server: {
+  //   proxy:
+  //   {
+  //     "/api":{
+  //       target: "https://teams-todo-back.onrender.com",
+  //       changeOrigin: false,
+  //       secure: true,
+  //       rewrite: (path) => path.replace(/^\/api/,''),
+  //     }
+  //   },
+  //   },
 })
