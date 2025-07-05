@@ -16,17 +16,24 @@ export const signup = async (req, res) => {
     const payload = { userId: newUser._id };
     const accessToken = createAccessToken(payload);
     const refreshToken = createRefreshToken(payload);
+    let site;
+
+    if(process.env.NODE_ENV !== "production") {
+      site = "Strict";
+    }else{
+      site = "None";
+    }
 
     res
       .cookie("accessToken", accessToken, {
         httpOnly: true,
-        sameSite: "None",
+        sameSite: site,
         secure: process.env.NODE_ENV === "production",
         maxAge: 15 * 60 * 1000, 
       })
       .cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        sameSite: "None",
+        sameSite: site,
         secure: process.env.NODE_ENV === "production",
         maxAge: 7 * 24 * 60 * 60 * 1000, 
       })
@@ -53,17 +60,24 @@ export const login = async (req, res) => {
     const payload = { userId: user._id };
     const accessToken = createAccessToken(payload);
     const refreshToken = createRefreshToken(payload);
+    let site;
+
+    if(process.env.NODE_ENV !== "production") {
+      site = "Strict";
+    }else{
+      site = "None";
+    }
 
     res
       .cookie("accessToken", accessToken, {
         httpOnly: true,
-        sameSite: "None",
+        sameSite: site,
         secure: process.env.NODE_ENV === "production",
         maxAge: 15 * 60 * 1000,
       })
       .cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        sameSite: "None",
+        sameSite: site,
         secure: process.env.NODE_ENV === "production",
         maxAge: 7 * 24 * 60 * 60 * 1000,
       })

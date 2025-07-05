@@ -5,43 +5,47 @@ import { useAppSelector } from "../app/hooks";
 import axios from "axios";
 import dayjs from "dayjs";
 
-const DashGrid = () => {
-  const isDarkMode = useAppSelector((s) => s.theme.mode === "dark"); // true | false
-  const user = useAppSelector((s) => s.auth.user); // { profilePicture, … }
+const DashGrid = ({ tasks, setTasks }) => {
+  const isDarkMode = useAppSelector((s) => s.theme.mode === "dark");
+  const user = useAppSelector((s) => s.auth.user);
 
   /* ─────────────  TASK STATE  ───────────── */
-  const [tasks, setTasks] = useState([]);
 
   /* ─────────────  MODAL / UI TOGGLES  ───────────── */
   const [showAverageTasks, setShowAverageTasks] = useState(false);
-  const [showUnassignedTasks, setShowUnassignedTasks] = useState(false);
   const [showHighPriorityTasks, setShowHighPriorityTasks] = useState(false);
-  const url = import.meta.env.VITE_API_URI
+  const [showResolvedTasks, setShowResolvedTasks] = useState(false);
+  const [showAllTasks, setShowAllTasks] = useState(false);
+  const url = import.meta.env.VITE_API_URI;
 
   /* ─────────────  INITIAL FETCH  ───────────── */
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const { data } = await axios.get(`${url}/task`,{withCredentials:true}); // returns tasks assigned to or by user
+        const { data } = await axios.get(`${url}/task`, {
+          withCredentials: true,
+        }); // returns tasks assigned to or by user
         setTasks(data);
       } catch (err) {
         console.error(err.response?.data?.message || "Failed to load tasks");
       }
     };
     fetchTasks();
-  }, [url]);
+  }, [url, setTasks]);
 
   /* ─────────────  DERIVED LISTS  ───────────── */
   const averageTasks = tasks.filter((t) => t.status === "In Progress");
-  const unassignedTasks = tasks.filter((t) => !t.assignedTo);
   const highPriorityTasks = tasks.filter(
     (t) => t.priority === "High" && t.status !== "Done"
   );
+  const resolvedTasks = tasks.filter((t) => t.status === "Done");
+  const allTasks = tasks.filter((t) => t.assignedTo !== user.id);
 
   /* ─────────────  UI TOGGLE FUNCTIONS  ───────────── */
   const toggleHighPriorityTasks = () => setShowHighPriorityTasks((p) => !p);
   const toggleAverageTasks = () => setShowAverageTasks((p) => !p);
-  const toggleUnassignedTasks = () => setShowUnassignedTasks((p) => !p);
+  const toggleResolvedTasks = () => setShowResolvedTasks((p) => !p);
+  const toggleAllTasks = () => setShowAllTasks((p) => !p);
 
   /* ---------- BAR: tasks created per day (Mon‑Sat) ---------- */
   useEffect(() => {
@@ -142,7 +146,6 @@ const DashGrid = () => {
         },
       ],
     });
-
     const handle = () => gauge.resize();
     window.addEventListener("resize", handle);
     return () => {
@@ -150,9 +153,10 @@ const DashGrid = () => {
       gauge.dispose();
     };
   }, [tasks, isDarkMode]);
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      {/* ─────────── DONE TASKS (team) ─────────── */}
+      {/* ─────────── ALL TASKS (team) ─────────── */}
       <div
         className={`rounded-2xl p-4 ${
           isDarkMode ? "bg-gray-800" : "bg-gray-200"
@@ -160,7 +164,7 @@ const DashGrid = () => {
       >
         <div className="flex items-center mb-2">
           <div className="w-4 h-4 bg-black mr-2" />
-          <span>Done tasks (all)</span>
+          <span>Done tasks (All)</span>
         </div>
         <div className="flex items-end mb-2">
           <span className="text-4xl font-bold">
@@ -184,7 +188,61 @@ const DashGrid = () => {
                   }%`,
           }}
         />
+        <button
+          onClick={toggleAllTasks}
+          className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-gray-300"
+        >
+          <i
+            className={`fas ${showAllTasks ? "fa-times" : "fa-arrow-right"}`}
+          />
+        </button>
       </div>
+
+      {showAllTasks && (
+        <div
+          className={`rounded-2xl p-4 col-span-2 ${
+            isDarkMode ? "bg-gray-800" : "bg-gray-200"
+          }`}
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center">
+              <div className="w-4 h-4 bg-black mr-2 flex items-center justify-center">
+                <div className="w-2 h-[1px] bg-white" />
+              </div>
+              <span className="text-lg font-semibold">Assigned Tasks:</span>
+            </div>
+            <button
+              onClick={toggleAllTasks}
+              className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-gray-300"
+            >
+              <i className="fas fa-times" />
+            </button>
+          </div>
+
+          {allTasks.length === 0 && (
+            <p className="text-sm text-gray-500">No tasks.</p>
+          )}
+
+          <div className="space-y-3">
+            {allTasks.map((t) => (
+              <div
+                key={t._id}
+                className={`p-3 rounded-lg ${
+                  isDarkMode ? "bg-gray-700" : "bg-white"
+                }`}
+              >
+                <div className="flex justify-between">
+                  <span className="font-medium">{t.title}</span>
+                  <span className="text-sm text-gray-500">
+                    {t.createdBy.name || "Someone"}
+                  </span>
+                  
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* ─────────── RESOLVED BY ME ─────────── */}
       <div
@@ -214,71 +272,46 @@ const DashGrid = () => {
               </div>
             </div>
           </div>
-
-          {/* simple sparkline of last 30 tasks (done vs not) */}
-          
-        </div>
-      </div>
-      <div className="rounded-2xl p-4 bg-black text-white flex items-center">
-            {tasks
-              .slice(-30)
-              .map((t) => <div className="flex w-full p-2" key = {t._id}>{t.title}</div>)
-            }
-      </div>
-      {/* ─────────── UNASSIGNED ─────────── */}
-      <div className="rounded-2xl p-4 bg-black text-white flex items-center">
-        <div className="mr-2 w-2 h-2 bg-white rounded-full" />
-        <div className="flex-grow">
-          <div className="text-3xl font-bold text-orange-500">
-            {unassignedTasks.length}
-          </div>
-          <div className="flex justify-between items-center">
-            <div>
-              <span>Unassigned tasks</span>
-              <div className="text-gray-400 text-sm">
-                {tasks.length
-                  ? Math.round((unassignedTasks.length / tasks.length) * 100)
-                  : 0}
-                % of all
-              </div>
-            </div>
-            <button
-              onClick={toggleUnassignedTasks}
-              className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-gray-700"
-            >
-              <i
-                className={`fas ${
-                  showUnassignedTasks ? "fa-times" : "fa-arrow-right"
-                }`}
-              />
-            </button>
-          </div>
+          <button
+            onClick={toggleResolvedTasks}
+            className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-gray-300"
+          >
+            <i
+              className={`fas ${
+                showResolvedTasks ? "fa-times" : "fa-arrow-right"
+              }`}
+            />
+          </button>
         </div>
       </div>
 
-      {showUnassignedTasks && (
+      {showResolvedTasks && (
         <div
           className={`rounded-2xl p-4 col-span-2 ${
             isDarkMode ? "bg-gray-800" : "bg-gray-200"
-          } relative`}
+          }`}
         >
-          <button
-            onClick={toggleUnassignedTasks}
-            className="absolute top-4 right-4 w-6 h-6 flex items-center justify-center rounded-full hover:bg-gray-300"
-          >
-            <i className="fas fa-times" />
-          </button>
-          <div className="flex items-center mb-4">
-            <div className="w-2 h-2 bg-white rounded-full mr-2" />
-            <span className="text-lg font-semibold">Unassigned Tasks</span>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center">
+              <div className="w-4 h-4 bg-black mr-2 flex items-center justify-center">
+                <div className="w-2 h-[1px] bg-white" />
+              </div>
+              <span className="text-lg font-semibold">Tasks Resolved:</span>
+            </div>
+            <button
+              onClick={toggleResolvedTasks}
+              className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-gray-300"
+            >
+              <i className="fas fa-times" />
+            </button>
           </div>
 
-          {unassignedTasks.length === 0 && (
-            <p className="text-sm text-gray-500">All tasks are assigned 🎉</p>
+          {resolvedTasks.length === 0 && (
+            <p className="text-sm text-gray-500">No tasks Resolved.</p>
           )}
 
           <div className="space-y-3">
-            {unassignedTasks.map((t) => (
+            {resolvedTasks.map((t) => (
               <div
                 key={t._id}
                 className={`p-3 rounded-lg ${
@@ -287,16 +320,8 @@ const DashGrid = () => {
               >
                 <div className="flex justify-between">
                   <span className="font-medium">{t.title}</span>
-                  <span
-                    className={`text-sm ${
-                      t.priority === "High"
-                        ? "text-red-500"
-                        : t.priority === "Medium"
-                        ? "text-yellow-500"
-                        : "text-green-500"
-                    }`}
-                  >
-                    {t.priority}
+                  <span className="text-sm text-gray-500">
+                    {t.createdBy.name || "Someone"}
                   </span>
                 </div>
               </div>
@@ -306,7 +331,6 @@ const DashGrid = () => {
       )}
 
       {/* ─────────── AVERAGE BY OTHERS ─────────── */}
-      {/* — unchanged visually, but uses averageTasks derived from tasks array — */}
       <div
         className={`rounded-2xl p-4 ${
           isDarkMode ? "bg-gray-800" : "bg-gray-200"

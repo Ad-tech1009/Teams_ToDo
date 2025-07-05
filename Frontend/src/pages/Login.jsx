@@ -64,7 +64,7 @@ const Login = () => {
       </nav>
 
       {/* Main */}
-      <main className="container mx-auto px-4 pt-10 pb-12 flex flex-col lg:flex-row gap-12 items-center">
+      <main className="container mx-auto px-4 pt-10 pb-12 flex flex-col lg:flex-row gap-12 items-center justify-center">
         {/* Form */}
         <section
           className={`w-full lg:w-7/12 max-w-xl rounded-2xl p-8 shadow-lg backdrop-blur-sm transition-all duration-300 ${

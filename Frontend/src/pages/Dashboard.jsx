@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
-import * as echarts from "echarts";
 import LogoutButton from "../components/logoutButton.jsx";
 import UserProfile from "../components/UserProfile.jsx";
 import { useAppSelector, useAppDispatch } from "../app/hooks";
 import { toggleTheme } from "../features/themeSlice.js";
 import axios from "axios";
-import dayjs from "dayjs";
 import AddTaskModal from "../components/AddTaskModal.jsx";
 import DashGrid from "../components/DashGrid.jsx";
 import KanbanBoard from "../components/KanbanBoard.jsx";
@@ -42,112 +40,6 @@ const Dashboard = () => {
     };
     fetchTasks();
   }, [url]);
-
-  useEffect(() => {
-    if (!tasks.length) return;
-    const chartDom = document.getElementById("taskBarChart");
-    if (!chartDom) return;
-
-    const counts = [0, 0, 0, 0, 0, 0];
-    const startOfWeek = dayjs().startOf("week").add(1, "day");
-
-    tasks.forEach((t) => {
-      const created = dayjs(t.createdAt);
-      const diff = created.diff(startOfWeek, "day");
-      if (diff >= 0 && diff < 6) counts[diff] += 1;
-    });
-
-    const myChart = echarts.init(chartDom);
-    myChart.setOption({
-      animation: false,
-      grid: { left: 0, right: 0, top: "10%", bottom: 0, containLabel: false },
-      xAxis: {
-        type: "category",
-        data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-        show: false,
-      },
-      yAxis: { type: "value", show: false },
-      series: [
-        {
-          data: counts,
-          type: "bar",
-          itemStyle: {
-            color: (p) =>
-              p.dataIndex === new Date().getDay() - 1
-                ? "#E66000"
-                : isDarkMode
-                ? "#666"
-                : "#333",
-            borderRadius: [3, 3, 0, 0],
-          },
-        },
-      ],
-    });
-
-    const handle = () => myChart.resize();
-    window.addEventListener("resize", handle);
-    return () => {
-      window.removeEventListener("resize", handle);
-      myChart.dispose();
-    };
-  }, [tasks, isDarkMode]);
-
-  useEffect(() => {
-    if (!tasks.length) return;
-    const dom = document.getElementById("circularProgressChart");
-    if (!dom) return;
-
-    const completed = tasks.filter((t) => t.status === "Done").length;
-    const percent = Math.round((completed / tasks.length) * 100);
-
-    const gauge = echarts.init(dom);
-    gauge.setOption({
-      animation: false,
-      series: [
-        {
-          type: "gauge",
-          startAngle: 90,
-          endAngle: -270,
-          pointer: { show: false },
-          progress: {
-            show: true,
-            roundCap: true,
-            clip: false,
-            overlap: false,
-            itemStyle: { color: "#E66000" },
-          },
-          axisLine: {
-            lineStyle: {
-              width: 15,
-              color: [
-                [percent / 100, "#E66000"],
-                [1, isDarkMode ? "#444" : "#f5f5f5"],
-              ],
-            },
-          },
-          splitLine: { show: false },
-          axisTick: { show: false },
-          axisLabel: { show: false },
-          detail: {
-            valueAnimation: false,
-            offsetCenter: [0, 0],
-            fontSize: 40,
-            fontWeight: "bold",
-            formatter: "{value}%",
-            color: isDarkMode ? "#fff" : "#000",
-          },
-          data: [{ value: percent }],
-        },
-      ],
-    });
-
-    const handle = () => gauge.resize();
-    window.addEventListener("resize", handle);
-    return () => {
-      window.removeEventListener("resize", handle);
-      gauge.dispose();
-    };
-  }, [tasks, isDarkMode]);
 
   return (
     <div
@@ -236,7 +128,7 @@ const Dashboard = () => {
             <KanbanBoard tasks={tasks} setTasks={setTasks} />
           )}
 
-          {view === "Dashboard" && <DashGrid />}
+          {view === "Dashboard" && <DashGrid tasks={tasks} setTasks={setTasks}/>}
         </div>
 
         {(showUserDashboard || showAddModal) && (

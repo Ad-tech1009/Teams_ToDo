@@ -31,7 +31,7 @@ export default function AddTaskModal({ open, onClose, onTaskAdded }) {
         setTeamMembers([]);
       }
     })();
-  }, [open]);
+  }, [open,url]);
 
   /* ─────────── Helpers ─────────── */
   const resetForm = () => {
