@@ -69,7 +69,7 @@ export default function KanbanBoard({ tasks, setTasks }) {
 
     /* 2. Persist backend */
     try {
-      await axios.patch(`${url}/task/${active.id}`, { status: toStatus });
+      await axios.patch(`${url}/task/${active.id}`, { status: toStatus }, { withCredentials: true });
     } catch (e) {
       console.error("Failed to update", e);
     }

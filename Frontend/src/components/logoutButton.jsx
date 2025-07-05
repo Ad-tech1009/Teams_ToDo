@@ -10,7 +10,7 @@ export default function LogoutButton() {
 
   const handleLogout = async () => {
     try {
-      await axios.get(`${url}/auth/logout`); 
+      await axios.get(`${url}/auth/logout`,{withCredentials: true});
     } catch (err) {
       console.error("Logout error:", err);
     } finally {

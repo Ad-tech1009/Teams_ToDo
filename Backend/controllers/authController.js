@@ -1,6 +1,7 @@
 import User from "../models/userSchema.js";
 import bcrypt from "bcrypt";
 import { createAccessToken, createRefreshToken } from "../config/token.js";
+import jwt from "jsonwebtoken";
 
 // route: POST /auth/signup
 export const signup = async (req, res) => {
@@ -80,10 +81,10 @@ export const login = async (req, res) => {
 export const refreshAccessToken = async (req, res) => {
   const refreshToken = req.cookies.refreshToken;
   if (!refreshToken) return res.status(401).json({ message: "Refresh token missing" });
-
+  // console.log("Refresh token:", refreshToken);
   try {
     const decoded = jwt.verify(refreshToken, process.env.REFRESH_SECRET);
-
+    // console.log("Decoded refresh token:", decoded);
     const newAccessToken = createAccessToken({ userId: decoded.userId });
 
     res

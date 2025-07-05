@@ -13,11 +13,11 @@ export default defineConfig({
   //   proxy:
   //   {
   //     "/api":{
-  //       target: "https://teams-todo-back.onrender.com",
+  //       target: "http://localhost:5000",
   //       changeOrigin: false,
   //       secure: true,
   //       rewrite: (path) => path.replace(/^\/api/,''),
   //     }
   //   },
-  //   },
+  // },
 })

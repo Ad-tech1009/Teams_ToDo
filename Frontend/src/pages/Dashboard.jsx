@@ -24,6 +24,7 @@ const Dashboard = () => {
   const [view, setView] = useState("Dashboard");
 
   useEffect(() => {
+    console.log("user",user);
     if (!user) {
       navigate("/", { replace: true });
       return;
@@ -33,7 +34,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const { data } = await axios.get(`${url}/task`);
+        const { data } = await axios.get(`${url}/task`,{withCredentials: true});
         setTasks(data);
       } catch (err) {
         console.error(err.response?.data?.message || "Failed to load tasks");

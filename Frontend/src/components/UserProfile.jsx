@@ -18,7 +18,7 @@ export default function UserProfile({ open, onClose }) {
     const fetchMe = async () => {
       setLoading(true);
       try {
-        const { data } = await axios.get(`${url}/user/${userId}`);
+        const { data } = await axios.get(`${url}/user/${userId}`,{withCredentials: true});
         setUser(data);
         setForm({
           name:  data.name,
@@ -34,7 +34,7 @@ export default function UserProfile({ open, onClose }) {
       }
     };
     fetchMe();
-  }, [open, userId]);
+  }, [open, userId, url]);
 
   if (!open) return null;
 
@@ -51,7 +51,7 @@ export default function UserProfile({ open, onClose }) {
         teams:  form.teams.split(",").map((t) => t.trim()).filter(Boolean),
         skills: form.skills.split(",").map((s) => s.trim()).filter(Boolean),
       };
-      const { data } = await axios.patch(`${url}/user/${userId}`, payload);
+      const { data } = await axios.patch(`${url}/user/${userId}`, payload,{withCredentials: true});
       setUser(data.user);
       setEdit(false);
     } catch (err) {

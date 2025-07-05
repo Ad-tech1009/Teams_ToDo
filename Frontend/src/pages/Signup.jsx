@@ -47,7 +47,7 @@ const Signup = () => {
           email: formData.email,
           password: formData.password,
         },
-        // { withCredentials: true }
+        { withCredentials: true }
       );
       dispatch(loginSuccess(res.data.user));
       navigate("/dash");

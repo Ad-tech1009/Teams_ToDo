@@ -25,13 +25,13 @@ export default function AddTaskModal({ open, onClose, onTaskAdded }) {
     if (!open) return;
     (async () => {
       try {
-        const { data } = await axios.get(`${url}/user/all`);
+        const { data } = await axios.get(`${url}/user/all`,{withCredentials: true});
         setTeamMembers(data);
       } catch {
         setTeamMembers([]);
       }
     })();
-  }, [open,url]);
+  }, [open]);
 
   /* ─────────── Helpers ─────────── */
   const resetForm = () => {
@@ -55,7 +55,7 @@ export default function AddTaskModal({ open, onClose, onTaskAdded }) {
         status,
         assignedTo: assignee,
       };
-      const { data } = await axios.post(`${url}/task/`, payload);
+      const { data } = await axios.post(`${url}/task/`, payload,{withCredentials: true});
       onTaskAdded(data.task);         
       onClose();
       resetForm();

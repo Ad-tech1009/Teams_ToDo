@@ -25,7 +25,7 @@ const Login = () => {
     setError("");
     setLoading(true);
     try {
-      const res = await axios.post(`${url}/auth/login`, formData);
+      const res = await axios.post(`${url}/auth/login`, formData,{withCredentials: true});
       dispatch(loginSuccess(res.data.user));
       navigate("/dash");
     } catch (err) {

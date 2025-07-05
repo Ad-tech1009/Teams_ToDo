@@ -22,14 +22,14 @@ const DashGrid = () => {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const { data } = await axios.get(`${url}/task`); // returns tasks assigned to or by user
+        const { data } = await axios.get(`${url}/task`,{withCredentials:true}); // returns tasks assigned to or by user
         setTasks(data);
       } catch (err) {
         console.error(err.response?.data?.message || "Failed to load tasks");
       }
     };
     fetchTasks();
-  }, []);
+  }, [url]);
 
   /* ─────────────  DERIVED LISTS  ───────────── */
   const averageTasks = tasks.filter((t) => t.status === "In Progress");
@@ -216,26 +216,15 @@ const DashGrid = () => {
           </div>
 
           {/* simple sparkline of last 30 tasks (done vs not) */}
-          <div className="grid grid-cols-6 gap-1">
-            {tasks
-              .slice(-30)
-              .map((t) => t.status === "Done")
-              .map((done, i) => (
-                <div
-                  key={i}
-                  className={`w-4 h-4 rounded-full ${
-                    done
-                      ? "bg-orange-600"
-                      : isDarkMode
-                      ? "bg-gray-600"
-                      : "bg-gray-300"
-                  }`}
-                />
-              ))}
-          </div>
+          
         </div>
       </div>
-
+      <div className="rounded-2xl p-4 bg-black text-white flex items-center">
+            {tasks
+              .slice(-30)
+              .map((t) => <div className="flex w-full p-2" key = {t._id}>{t.title}</div>)
+            }
+      </div>
       {/* ─────────── UNASSIGNED ─────────── */}
       <div className="rounded-2xl p-4 bg-black text-white flex items-center">
         <div className="mr-2 w-2 h-2 bg-white rounded-full" />
